@@ -1,0 +1,25 @@
+apitest:
+  build: app
+  dockerfile: Dockerfile.test
+  links:
+    - dbtest
+    - redistest
+  environment:
+    DB_URL: //dbtest/mini-hackernews
+    DB_USER: postgres
+    DB_PASSWORD: password
+    REDIS_URI: redis://:password@redistest:6379
+    ETAG_REDIS_URI: redis://:password@redistest:6379
+  labels:
+    test_id: "${JENKINS_TEST_ID}"
+
+dbtest:
+  build: ./postgres
+  ports:
+    - 5432:5432
+  environment:
+    - POSTGRES_PASSWORD=password
+
+redistest:
+  image: redis
+  command: redis-server --requirepass password
