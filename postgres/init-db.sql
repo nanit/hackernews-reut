@@ -33,6 +33,9 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+CREATE DATABASE hackernews;
+\c hackernews;
+
 --
 -- Name: posts; Type: TABLE; Schema: public; Owner: postgres
 --
@@ -178,7 +181,7 @@ COPY public.users (id, name) FROM stdin;
 --
 
 COPY public.votes (id, voter_id, post_id) FROM stdin;
-.
+\.
 
 
 --
