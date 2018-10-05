@@ -109,8 +109,7 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 CREATE TABLE public.votes (
     id bigint NOT NULL,
     voter_id bigint NOT NULL,
-    post_id bigint NOT NULL,
-    upvote boolean NOT NULL
+    post_id bigint NOT NULL
 );
 
 
@@ -178,8 +177,8 @@ COPY public.users (id, name) FROM stdin;
 -- Data for Name: votes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.votes (id, voter_id, post_id, upvote) FROM stdin;
-\.
+COPY public.votes (id, voter_id, post_id) FROM stdin;
+.
 
 
 --
