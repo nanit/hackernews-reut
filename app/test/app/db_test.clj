@@ -1,6 +1,6 @@
 (ns app.db-test
   (:require [clojure.test :refer :all]
-            [app.db :refer :all]))
+            [app.db.api :refer :all]))
 
 (deftest test-db
 
