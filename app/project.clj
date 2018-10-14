@@ -9,6 +9,8 @@
                  [environ "1.1.0"]
                  [org.postgresql/postgresql "9.4.1207"]
                  [org.clojure/data.json "0.2.6"]
+                 [com.taoensso/carmine "2.19.0"]
+                 [crypto-password "0.2.0"]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-defaults "0.3.2"]]
   :plugins [[lein-ring "0.12.4"]]

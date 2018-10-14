@@ -78,7 +78,8 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 CREATE TABLE public.users (
     id bigint NOT NULL,
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    password character varying(60) NOT NULL
 );
 
 
@@ -172,7 +173,7 @@ COPY public.posts (id, author_id, text, created_date, updated_date) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, name) FROM stdin;
+COPY public.users (id, name, password) FROM stdin;
 \.
 
 

@@ -2,6 +2,7 @@
   (:require [honeysql.core :as sql]
             [honeysql.helpers :refer :all :as helpers]
             [clojure.java.jdbc :as j]
+            [crypto.password.bcrypt :as password]
             [environ.core :refer [env]]))
 
 (def conn
@@ -24,12 +25,18 @@
                 (->
                  (delete-from %))) [:votes :posts :users] )))
 
+(defn encrypt-password [plaintext-password]
+  (password/encrypt plaintext-password))
+
+(defn check-password [raw encrypted]
+  (password/check raw encrypted))
 
 ;; users
-(defn add-user [name]
+(defn add-user [name plaintext-password]
   (execute (->
             (insert-into :users)
-            (values [{:name name}]))))
+            (values [{:name name
+                      :password (encrypt-password plaintext-password)}]))))
 
 (defn get-user [id]
   (first
@@ -37,6 +44,13 @@
     {:select :*
      :from :users
      :where [:= :id id]})))
+
+(defn get-user-by-name [name]
+  (first
+   (query
+    {:select :*
+     :from :users
+     :where [:= :name name]})))
 
 (defn delete-user [id]
   (execute
@@ -80,12 +94,14 @@
 
 (defn delete-vote [id]
   (execute
+
    (->
     (delete-from :votes)
     (:where [:= :id id]))))
 
 (defn get-vote [id]
-  (first (query
-          {:select [:*]
-           :from [:votes]
-           :where [:= :id id]})))
+  (first
+   (query
+    {:select [:*]
+     :from [:votes]
+     :where [:= :id id]})))

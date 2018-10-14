@@ -1,72 +1,42 @@
 (ns app.handler
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
-            [ring.util.response :refer [response]]
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
-            [app.db.api :as db-api]
+            [app.middleware :refer [wrap-auth]]
             ;; no CSRF token in api-defaults. consider adding site-defaults
 
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-            [app.db.api :as db]))
+            [app.controller :as controller]))
 
 (defn parse-int [s]
   (Integer. s))
 
-(defn top-posts [req]
-  "top posts")
-
-
-;; posts
-(defn add-post [req]
-  (let [author-id (get-in req [:json-params "author-id"])
-        text (get-in req [:json-params "text"])]
-    (response (db-api/add-post author-id text))))
-
-(defn get-post [post-id]
-  (response (db-api/get-post post-id)))
-
-
-;; users
-(defn add-user [req]
-  (response (db-api/add-user (get-in req [:json-params "name"]))))
-
-(defn get-user [id]
-  (response (db-api/get-user id)))
-
-
-;; votes
-(defn add-vote [req]
-  (let [voter-id (get-in req [:json-params "voter-id"])
-        post-id (get-in req [:json-params "post-id"])]
-    (response (db-api/add-vote voter-id post-id))))
-
-(defn get-vote [id]
-  (response (db-api/get-vote id)))
-
-
-
 (defroutes post-routes
   (context "/posts" []
-           (PUT "/" req (add-post req))
-           (GET "/:post-id" [post-id] (get-post (parse-int post-id)))
+           (PUT "/" req (controller/add-post req))
+           (GET "/:post-id" [post-id] (controller/get-post (parse-int post-id)))
            (route/not-found "Not Found")))
 
 (defroutes user-routes
   (context "/users" []
-           (PUT "/" req (add-user req))
-           (GET "/:id" [id] (get-user (parse-int id)))
+           (GET "/:id" [id] (controller/get-user (parse-int id)))
            (route/not-found "Not Found")))
 
 (defroutes vote-routes
   (context "/votes" []
-           (PUT "/" req (add-vote req))
-           (GET "/:id" [id] (get-vote (parse-int id)))
+           (PUT "/" req (controller/add-vote req))
+           (GET "/:id" [id] (controller/get-vote (parse-int id)))
            (route/not-found "Not Found")))
 
-(defroutes api
+(defroutes auth-routes
   post-routes
   user-routes
   vote-routes)
+
+(defroutes api
+  (POST "/login" req (controller/login req))
+  (PUT "/register" req (controller/add-user req))
+  (wrap-routes auth-routes wrap-auth))
 
 (def app
   (-> api
