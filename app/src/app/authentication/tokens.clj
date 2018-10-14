@@ -10,11 +10,14 @@
 (defn new-token []
   (str (java.util.UUID/randomUUID)))
 
-(defn generate-token []
+(defn generate-token [user-id]
   ;; FIXME: ttl?
   (let [token (new-token)]
-    (wcar* (car/set token "todo"))
+    (wcar* (car/set token user-id))
     token))
+
+(defn user-id-from-token [token]
+  (wcar* (car/get token)))
 
 (defn is-token-valid? [token]
   (= 1 (wcar* (car/exists token))))

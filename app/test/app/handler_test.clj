@@ -2,13 +2,10 @@
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
             [clojure.data.json :as json]
-            [app.db.api :as db]
             [app.authentication.tokens :refer [generate-token is-token-valid?]]
             [app.handler :refer :all]
+            [app.db.helpers :as db-helpers]
             [app.authentication.tokens :as tokens]))
-
-
-(def TEST-TOKEN (generate-token))
 
 ;; users
 (defn create-user-request [user-name plaintext-password]
@@ -25,7 +22,7 @@
 (defn get-user-by-id-request [id]
   (->
    (mock/request :get (str "/users/" (str id)))
-   (mock/header "token" TEST-TOKEN)))
+   (mock/header "token" (generate-token id))))
 
 (defn get-user-by-id [id]
   (let [response (app (get-user-by-id-request id))]
@@ -38,14 +35,14 @@
   (let [response (app (->
                        (mock/request :put "/posts")
                        (mock/json-body {:author-id user-id :text post-text})
-                       (mock/header "token" TEST-TOKEN)))]
+                       (mock/header "token" (generate-token user-id))))]
     (json/read-str
      (:body response))))
 
 (defn get-post-by-id [id]
   (let [response (app (->
                        (mock/request :get (str "/posts/" (str id)))
-                       (mock/header "token" TEST-TOKEN)))]
+                       (mock/header "token" (generate-token "blah"))))]
     (json/read-str
      (:body response))))
 
@@ -56,14 +53,14 @@
   (let [response (app (->
                        (mock/request :put "/votes")
                        (mock/json-body {:voter-id user-id :post-id post-id})
-                       (mock/header "token" TEST-TOKEN)))]
+                       (mock/header "token" (generate-token user-id))))]
     (json/read-str
      (:body response))))
 
 (defn get-vote-by-id [id]
   (let [response (app (->
                        (mock/request :get (str "/votes/" (str id)))
-                       (mock/header "token" TEST-TOKEN)))]
+                       (mock/header "token" (generate-token "blah"))))]
     (json/read-str
      (:body response))))
 
@@ -80,7 +77,7 @@
 
 (deftest test-login
   (testing "login success"
-    (db/delete-db)
+    (db-helpers/delete-db)
     (let [user-name "reut"
           plaintext-password "password"
           user (create-user user-name plaintext-password)
@@ -90,7 +87,7 @@
 
 (deftest test-api
   (testing "test all endpoints sanity"
-    (db/delete-db)
+    (db-helpers/delete-db)
     (let [user-name "reut"
           plaintext-password "password"
           user (create-user user-name plaintext-password)]
@@ -107,7 +104,7 @@
 
 
   (testing "get data"
-    (db/delete-db)
+    (db-helpers/delete-db)
     (let [user-name "reut"
           post-text "text text text"
           plaintext-password "secure"

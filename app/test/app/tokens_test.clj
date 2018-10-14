@@ -6,7 +6,7 @@
 (t/deftest is-token-valid?
 
   (t/testing "valid token"
-    (let [token (tokens/generate-token)]
+    (let [token (tokens/generate-token "uid")]
       (t/is (tokens/is-token-valid? token))))
 
   (t/testing "invalid token"
@@ -30,7 +30,7 @@
 (t/deftest authenticated?
 
   (t/testing "authenticated"
-    (let [token (tokens/generate-token)
+    (let [token (tokens/generate-token "uid")
           request {:headers {"token" token}}]
       (t/is (tokens/authenticated? request))))
 
