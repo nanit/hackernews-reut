@@ -26,6 +26,7 @@
           post-text "blah blah blah"
           password "such secure wow"]
       (db-helpers/delete-db)
+      ;; CREATE
       (let [user (users/add-user username password)
             user-id (:id user)
             post (posts/add-post user-id post-text)
@@ -36,6 +37,7 @@
         (is (= (:post_id vote) post-id))
         (let [generated-vote (votes/get-vote vote-id)]
           (is (= vote generated-vote))
+          ;; UPDATE
           (let [new-post-text "1234"
                 new-user-name "not reut"
                 new-user-pass "hooomaannnn"]
@@ -44,4 +46,14 @@
             (let [new-user (users/get-user user-id)
                   new-post (posts/get-post post-id)]
               (is (= new-post-text (:text new-post)))
-              (is (= new-user-name (:name new-user))))))))))
+              (is (= new-user-name (:name new-user)))
+
+              ;; DELETE
+              (votes/delete-vote vote-id)
+              (is (= nil (votes/get-vote vote-id)))
+
+              (posts/delete-post post-id)
+              (is (= nil (posts/get-post post-id)))
+
+              (users/delete-user user-id)
+              (is (= nil (users/get-user user-id))))))))))

@@ -16,11 +16,11 @@
                     (hsql-helpers/values [{:author_id author-id
                                            :text post-text}]))))
 
-(defn delete-post [id]
+(defn delete-post [post-id]
   (helpers/execute
    (->
     (hsql-helpers/delete-from :posts)
-    (:where [:= :id id]))))
+    (hsql-helpers/where [:= :id post-id]))))
 
 (defn get-post [post-id]
   (first (helpers/query

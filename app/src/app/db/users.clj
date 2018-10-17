@@ -34,7 +34,7 @@
   (helpers/execute
    (->
     (hsql-helpers/delete-from :users)
-    (:where [:= :id user-id]))))
+    (hsql-helpers/where [:= :id user-id]))))
 
 (defn update-user [user-id name plaintext-password]
   (helpers/execute (->

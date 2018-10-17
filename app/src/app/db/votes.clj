@@ -7,7 +7,7 @@
   (helpers/execute (->
                     (hsql-helpers/insert-into :votes)
                     (hsql-helpers/values [{:voter-id user-id
-                                      :post-id post-id}]))))
+                                           :post-id post-id}]))))
 
 (defn delete-vote [vote-id]
   (helpers/execute
@@ -23,6 +23,7 @@
      :where [:= :id vote-id]})))
 
 (defn delete-vote [vote-id]
-  (helpers/query
-   (hsql-helpers/delete-from :films)
-   (hsql-helpers/where [:= :id vote-id])))
+  (helpers/execute
+   (->
+    (hsql-helpers/delete-from :votes)
+    (hsql-helpers/where [:= :id vote-id]))))
