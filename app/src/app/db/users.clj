@@ -40,5 +40,5 @@
   (helpers/execute (->
                     (hsql-helpers/update :users)
                     (hsql-helpers/sset {:name name
-                                        :plaintext-password plaintext-password})
+                                        :password plaintext-password})
                     (hsql-helpers/where [:= :id user-id]))))

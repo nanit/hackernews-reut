@@ -30,8 +30,18 @@
             user-id (:id user)
             post (posts/add-post user-id post-text)
             post-id (:id post)
-            vote (votes/add-vote user-id post-id)]
+            vote (votes/add-vote user-id post-id)
+            vote-id (:id vote)]
         (is (= (:voter_id vote) user-id))
         (is (= (:post_id vote) post-id))
-        (let [generated-vote (votes/get-vote (:id vote))]
-          (is (= vote generated-vote)))))))
+        (let [generated-vote (votes/get-vote vote-id)]
+          (is (= vote generated-vote))
+          (let [new-post-text "1234"
+                new-user-name "not reut"
+                new-user-pass "hooomaannnn"]
+            (posts/update-post post-id new-post-text)
+            (users/update-user user-id new-user-name new-user-pass)
+            (let [new-user (users/get-user user-id)
+                  new-post (posts/get-post post-id)]
+              (is (= new-post-text (:text new-post)))
+              (is (= new-user-name (:name new-user))))))))))
